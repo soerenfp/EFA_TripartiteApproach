@@ -278,6 +278,8 @@ plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA
 ```
 NOTE: This looks better! Now all my 18 trial traces are included in the PCA plot.
 
+Now my problem with the col.groups() comes below. 
+
 ```{r, echo=TRUE}
 plot(allDiatomOutlines.p,"Type", title="All data PCA")
 plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE)
