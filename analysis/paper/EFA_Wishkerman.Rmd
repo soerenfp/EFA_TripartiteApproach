@@ -109,6 +109,7 @@ install.packages("grid")
 install.packages("gridExtra")
 install.packages("Momocs")
 
+devtools::install_github("3inar/grindr")
 #Extra
 #install.packages("tidyverse")
 ```
@@ -125,6 +126,8 @@ library(grid)
 library(gridExtra)
 library(Momocs)
 
+library(grindr)
+library(devtools)
 #Extra
 
 #library(tidyverse)
