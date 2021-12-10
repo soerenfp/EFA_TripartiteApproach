@@ -98,18 +98,27 @@ Wang, Li-Ying, and Ben Marwik. 2020. Standardization of ceramic shape: A case st
 
 (2.1.1) Install these packages for statistical analysis...
 ```{r install packages, eval=FALSE, echo=TRUE}
-install.packages("bios2mds")
-install.packages("MASS")
-install.packages("ggplot2")
-install.packages("GGally")
-install.packages("doBy")
-install.packages("data.table")
-install.packages("plyr")
-install.packages("grid")
-install.packages("gridExtra")
-install.packages("Momocs")
+#install.packages("bios2mds")
+#install.packages("MASS")
+#install.packages("ggplot2")
+#install.packages("GGally")
+#install.packages("doBy")
+#install.packages("data.table")
+#install.packages("plyr")
+#install.packages("grid")
+#install.packages("gridExtra")
+#install.packages("Momocs")
 
-devtools::install_github("3inar/grindr")
+#Needed for LDA 
+#install.packages("topicmodels")
+#install.packages("tm")
+
+#Needed for col.groups() when plotting PCA
+install.packages("grDevices")
+
+#Recommended by Sophie (plot_PCA)
+#devtools::install_github("3inar/grindr")
+
 #Extra
 #install.packages("tidyverse")
 ```
@@ -124,12 +133,16 @@ library(data.table)
 library(plyr)
 library(grid)
 library(gridExtra)
-library(Momocs)
+library(Momocs) #most important
 
+#Found trouble shouting
+library(grDevices)
 library(grindr)
 library(devtools)
-#Extra
+library(tm)
+library(topicmodels)
 
+#Extra
 #library(tidyverse)
 ```
 
@@ -138,11 +151,11 @@ library(devtools)
 
 ##(2.2.1) OUTLINE ANALYSIS
 
-NOTE: Somewhere before the start of the analysis I have to smoothen the outlines because of the pixel noise from the original pictures. Bonhomme et al. 2014 (p. 11) suggests to use either coo_smooth() or eFourier ().
+NOTE: Somewhere before the start of the analysis I have to smoothen the outlines because of the pixel noise from the original pictures. Bonhomme et al. 2014 (p. 11) suggests to use either coo_smooth() or eFourier().
 
-#Load and prepare data
+#Load, create a new variable lf()
 
-```{r load and prepare data, echo=TRUE}
+```{r load and create data frame, echo=TRUE}
 
 #(1) Produce a character vector of the names of files or directories in the named directory with the list.files() arguement. 
 
@@ -151,11 +164,13 @@ NOTE: Somewhere before the start of the analysis I have to smoothen the outlines
 #NOTE: Do not use long folder names
 
 lf <- list.files("C:/Users/Pedersen/Documents/R/EFA_TripartiteApproach/analysis/data/trial_data/Trial traces01", pattern = "\\.txt$", full.names=TRUE)  
+```
 
-##########
+#Create a new variable and split the data using lf_structure()
 
 #(2) If filenames are consistently named with the same character serating factors, and with every individual including its belonging levels, this function lf_structure() returns a data.frame from it that can be passed to Out, Opn, Ldk objects.
 
+```{r split data frame, echo=TRUE}
 #split = (...) -> character, the spliting factor used for the file names.
 
 #NOTE: The following split = "C:/(...)" function I believe is again to specify the path to the data.
@@ -165,16 +180,18 @@ lf <- list.files("C:/Users/Pedersen/Documents/R/EFA_TripartiteApproach/analysis/
 lf1 <- lf_structure(lf,  split = "C:/Users/Pedersen/Documents/R/EFA_TripartiteApproach/analysis/data/trial_data/Trial traces01", trim.extension = FALSE)
 ```
 
-#Create a data frame
+#Create a variable and substr()
 
 ```{r create a data frame, echo=TRUE}
 #(3) The function data.frame() creates data frames, tightly coupled collections of variables which share many of the properties of matrices and of lists
 
 #"In order to specify explanatory variables going along with the coordinate or coefficient set, grouping factors or covariates can be specified through a data.frame(), and then used to create subsets (see ?Coo)." (Bonhomme et al. 2014)
 
+#NOTE: Problem in the LDA comes from below, that the .txt files have wrong headline names -> change to original coordinate names! (Do DiaOutline trace again)
+
 lf2<-data.frame(substr(lf1$V2, 1, 5))
 
-#...and name the data frame
+#...and name the data frame column
 
 names(lf2)[1] <- "Type"
 ```
@@ -185,7 +202,6 @@ names(lf2)[1] <- "Type"
 ```{r import coordinates, echo=TRUE}
 coordinates <- import_txt(lf)
 ```
-
 #Build an Out object 
 
 -> In Momocs, Out-classes objects are lists of closed outlines, with optional components, and on which generic methods such as plotting methods (e.g. stack) and specific methods (e.g. efourier can be applied. Out objects are primarily Coo objects.
@@ -223,7 +239,7 @@ calibrate_harmonicpower(allDiatomOutlines)
 #Estimates the number of harmonics required for the four Fourier methods implemented in Momocs
 ```
 
-#Compute the EFA from a matrix
+#Compute the EFA from a matrix in a new variable
 
 "Conflicting situations such as those suggested by this familiar saying are actually a recurrent issue in morphometrics: what is the right number of harmonics? Unfortunately, no objecttive criterion exists so far, and the criterion used usually depends on the scope of the study." (Bonhomme et al. 2014)
 
@@ -281,10 +297,18 @@ plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA
 ```
 NOTE: This looks better! Now all my 18 trial traces are included in the PCA plot.
 
-Now my problem with the col.groups() comes below. 
+#Plot the PCA
 
-```{r, echo=TRUE}
+PROBLEM: Now my problem with the col.groups() comes below.
+SOLVED: Need "grDevices" package installed
+
+```{r plot PCA, echo=TRUE}
 plot(allDiatomOutlines.p,"Type", title="All data PCA")
+```
+
+```{r plot PCA, echo=TRUE}
+#Give a new headline instead of "1"
+
 plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE)
 ```
 
@@ -297,6 +321,15 @@ plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.label
 #NOTE: Below "Error in fac_dispatcher(x, fac) : argument "fac" is missing, with no default"
 
 allDiatomOutlines.l <- LDA(allDiatomOutlines.p)
+
+#Sophie (use Momocs by ::)
+
+allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, 1)
+
+#View "x" and "fac" Sophie
+View(allDiatomOutlines.p$fac)
+View(allDiatomOutlines.p$x)
+
 
 #tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
 plot(allDiatomOutlines.l, chull.filled=TRUE, stars=TRUE, title="All data LDA") #Fig 8 in the paper.
