@@ -98,29 +98,29 @@ Wang, Li-Ying, and Ben Marwik. 2020. Standardization of ceramic shape: A case st
 
 (2.1.1) Install these packages for statistical analysis...
 ```{r install packages, eval=FALSE, echo=TRUE}
-#install.packages("bios2mds")
-#install.packages("MASS")
-#install.packages("ggplot2")
-#install.packages("GGally")
-#install.packages("doBy")
-#install.packages("data.table")
-#install.packages("plyr")
-#install.packages("grid")
-#install.packages("gridExtra")
-#install.packages("Momocs")
+install.packages("bios2mds")
+install.packages("MASS")
+install.packages("ggplot2")
+install.packages("GGally")
+install.packages("doBy")
+install.packages("data.table")
+install.packages("plyr")
+install.packages("grid")
+install.packages("gridExtra")
+install.packages("Momocs")
 
 #Needed for LDA 
-#install.packages("topicmodels")
-#install.packages("tm")
+install.packages("topicmodels")
+install.packages("tm")
 
 #Needed for col.groups() when plotting PCA
-#install.packages("grDevices")
+install.packages("grDevices")
 
 #Recommended by Sophie (plot_PCA)
-#devtools::install_github("3inar/grindr")
+devtools::install_github("3inar/grindr")
 
 #Extra
-#install.packages("tidyverse")
+install.packages("tidyverse")
 ```
 (2.1.2) ...and load
 ```{r load packages, echo=TRUE}
@@ -163,7 +163,7 @@ NOTE: Somewhere before the start of the analysis I have to smoothen the outlines
 
 #NOTE: Do not use long folder names
 
-lf <- list.files(path = "/Users/nikolasgestrich/Documents/github/EFA_TripartiteApproach/analysis/data/trial_data/Trial traces01", # shorten this, maybe using here::here function
+lf <- list.files(path = "/Users/Pedersen/EFA/analysis/data/trial_data/Trial traces01", # shorten this, maybe using here::here function
                  pattern = "\\.txt$", # this tells the function to only look for .txt type files
                  full.names=TRUE)  # We have to keep the full names on to read in the outlines later.
 #
@@ -184,7 +184,7 @@ lf1 <- Momocs::lf_structure(lf,
                     split = "/", # this specifies the separator for splitting. In your case it is a /
                     trim.extension = TRUE)
 
-lf1 <- lf1 %>% separate(V11, c("project", "type", "sort", "number"))
+lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number"))
 
 # @Søren: I am using Momocs:: in front of the function only to remind myself where it comes from. It is not necessary.
 ```
@@ -196,7 +196,7 @@ lf1 <- lf1 %>% separate(V11, c("project", "type", "sort", "number"))
 
 #"In order to specify explanatory variables going along with the coordinate or coefficient set, grouping factors or covariates can be specified through a data.frame(), and then used to create subsets (see ?Coo)." (Bonhomme et al. 2014)
 
-#NOTE: Problem in the LDA comes from below, that the .txt files have wrong headline names -> change to original coordinate names! (Do DiaOutline trace again)
+#NOTE: Problem in the LDA comes from below, that the .txt files have wrong headline names -> change to original coordinate names! (Do DiaOutline trace again) NOTE2: No, this is not the problem
 
 lf2<-data.frame(substr(lf1$type, 1, 5))
 
@@ -263,7 +263,7 @@ calibrate_harmonicpower_efourier(allDiatomOutlines)
 NOTE: For more information about estimating the right amount of harmonics see Bonhomme et al. 2014, p. 12-14
 
 ```{r compute the EFA, echo=TRUE}
-allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=14) #Num. of harmonics set to 32
+allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=14) #Num. of harmonics set to 14
 ```
 
 OK, the first part of the outline analysis is fairly done. I got my shapes in a coordinate system (although they are tilted 90° to the left), and the commands seems to be working. The last line (allDiatomOutlines.f) has a warning that -`norm=TRUE` is used and this may be troublesome. See ?efourier-, but when I look at ?efourier then the standard is "norm=TRUE". I don't believe that it is of great importance.
@@ -308,7 +308,7 @@ NOTE: I can solve the problem with removing the "1" in the code. I think the "1"
 ```{r plot the PCA, echo=TRUE}
 #Original line plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
-plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA")
+plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
 #NOTE: I get the warning "will be deprecated soon, see ?plot_PCA" but it makes a plot of the PCAs
 
