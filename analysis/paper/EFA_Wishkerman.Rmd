@@ -163,7 +163,7 @@ NOTE: Somewhere before the start of the analysis I have to smoothen the outlines
 
 #NOTE: Do not use long folder names
 
-lf <- list.files(path = here::here("analysis/data/trial_data/Trial traces01"), 
+lf <- list.files(path = here::here("analysis/data/Dia Outline traces"), 
                  pattern = "\\.txt$", # this tells the function to only look for .txt type files
                  full.names=TRUE)  # We have to keep the full names on to read in the outlines later.
 ```
@@ -181,9 +181,9 @@ lf <- list.files(path = here::here("analysis/data/trial_data/Trial traces01"),
 
 lf1 <- Momocs::lf_structure(lf,  
                     split = "/", # this specifies the separator for splitting. In your case it is a /
-                    trim.extension = TRUE)
+                    trim.extension = TRUE) #Perhaps I have to give them better names?
 
-#lf1 <- lf1 %>% separate(V11, c("project", "type", "sort", "number"))
+lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command splits the column v1, but it has no use
 
 # @Søren: I am using Momocs:: in front of the function only to remind myself where it comes from. It is not necessary.
 ```
@@ -205,7 +205,7 @@ names(lf2)[1] <- "Type"
 
 #this is, I think, where one of the problems comes in. We need to give things types. So I am just going to fill this with 3 random values. This means that "fac" will later always be these things.
 levels = c("great", "medium", "horrible")
-lf2$Type <- sample(levels, size = 18, replace = TRUE)
+lf2$Type <- sample(levels, size = 241, replace = TRUE) #OBS: the "size" has to be the total number of vessels (i.e. 241 in this example)
 lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So it needs to be converted.
 ```
 
@@ -252,7 +252,7 @@ Error in calibrate_harmonicpower(allDiatomOutlines) :
 calibrate_harmonicpower_efourier(allDiatomOutlines) 
 #Estimates the number of harmonics required for the four Fourier methods implemented in Momocs
 
-# using the efourier function works now. I've interpreted the output to mean that noti´hing much changes after about 14 harmonics, but you need to check this.
+# using the efourier function works now. I've interpreted the output to mean that nothing much changes after about 14 harmonics, but you need to check this.
 ```
 
 #Compute the EFA from a matrix in a new variable
@@ -262,7 +262,7 @@ calibrate_harmonicpower_efourier(allDiatomOutlines)
 NOTE: For more information about estimating the right amount of harmonics see Bonhomme et al. 2014, p. 12-14
 
 ```{r compute the EFA, echo=TRUE}
-allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=18) #Num. of harmonics set to 32
+allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=23) #Num. of harmonics set to 23 as suggested by the calibrate harmonic power
 ```
 
 OK, the first part of the outline analysis is fairly done. I got my shapes in a coordinate system (although they are tilted 90° to the left), and the commands seems to be working. The last line (allDiatomOutlines.f) has a warning that -`norm=TRUE` is used and this may be troublesome. See ?efourier-, but when I look at ?efourier then the standard is "norm=TRUE". I don't believe that it is of great importance.
@@ -331,6 +331,8 @@ plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.label
 ```
 
 ##(2.2.3) LDA: Linear Discriminant Analysis
+
+OBS: Perhaps I don't need to do the LDA???
 
 "Both PCA and LDA are linear transformation techniques, and whereas LDA is supervised, PCA is unsupervised." (Wishkerman & Hamilton 2018)
 
