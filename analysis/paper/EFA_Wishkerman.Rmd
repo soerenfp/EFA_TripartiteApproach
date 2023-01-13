@@ -163,10 +163,9 @@ NOTE: Somewhere before the start of the analysis I have to smoothen the outlines
 
 #NOTE: Do not use long folder names
 
-lf <- list.files(path = "/Users/nikolasgestrich/Documents/github/EFA_TripartiteApproach/analysis/data/trial_data/Trial traces01", # shorten this, maybe using here::here function
+lf <- list.files(path = here::here("analysis/data/trial_data/Trial traces01"), 
                  pattern = "\\.txt$", # this tells the function to only look for .txt type files
                  full.names=TRUE)  # We have to keep the full names on to read in the outlines later.
-#
 ```
 
 #Create a new variable and split the data using lf_structure()
@@ -174,7 +173,7 @@ lf <- list.files(path = "/Users/nikolasgestrich/Documents/github/EFA_TripartiteA
 #(2) If filenames are consistently named with the same character serating factors, and with every individual including its belonging levels, this function lf_structure() returns a data.frame from it that can be passed to Out, Opn, Ldk objects.
 
 ```{r split data frame, echo=TRUE}
-#split = (...) -> character, the spliting factor used for the file names.
+#split = (...) -> character, the splitting factor used for the file names.
 
 #NOTE: The following split = "C:/(...)" function I believe is again to specify the path to the data.
 
@@ -184,7 +183,7 @@ lf1 <- Momocs::lf_structure(lf,
                     split = "/", # this specifies the separator for splitting. In your case it is a /
                     trim.extension = TRUE)
 
-lf1 <- lf1 %>% separate(V11, c("project", "type", "sort", "number"))
+#lf1 <- lf1 %>% separate(V11, c("project", "type", "sort", "number"))
 
 # @Søren: I am using Momocs:: in front of the function only to remind myself where it comes from. It is not necessary.
 ```
@@ -263,7 +262,7 @@ calibrate_harmonicpower_efourier(allDiatomOutlines)
 NOTE: For more information about estimating the right amount of harmonics see Bonhomme et al. 2014, p. 12-14
 
 ```{r compute the EFA, echo=TRUE}
-allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=14) #Num. of harmonics set to 32
+allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=18) #Num. of harmonics set to 32
 ```
 
 OK, the first part of the outline analysis is fairly done. I got my shapes in a coordinate system (although they are tilted 90° to the left), and the commands seems to be working. The last line (allDiatomOutlines.f) has a warning that -`norm=TRUE` is used and this may be troublesome. See ?efourier-, but when I look at ?efourier then the standard is "norm=TRUE". I don't believe that it is of great importance.
