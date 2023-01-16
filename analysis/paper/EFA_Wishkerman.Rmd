@@ -111,6 +111,8 @@ an outline x-y coordinate vector metric for each shape that can be further analy
 #install.packages("grid")
 #install.packages("gridExtra")
 #install.packages("Momocs")
+#install.packages("cli") #Used to troubleshoot "devtools" that could not be loaded -> worked with restart of R!
+#install.packages("devtools")
 
 #Needed for LDA 
 #install.packages("topicmodels")
@@ -178,8 +180,6 @@ lf <- list.files(path = here::here("analysis/data/Dia Outline traces"),
 
 #NOTE: The following split = "C:/(...)" function I believe is again to specify the path to the data.
 
-#NOTE: Perhaps my problem about "do not know how to turn into a coo" in part 6 below already starts here? Perhaps the path is wrong/to long or some of the .txt files are crooked. SOLVED: Two of my traces were crooked -> Deleted the files
-
 lf1 <- Momocs::lf_structure(lf,  
                     split = "/", # this specifies the separator for splitting. In your case it is a /
                     trim.extension = TRUE) #Perhaps I have to give them better names?
@@ -240,7 +240,6 @@ panel(allDiatomOutlines, fac="Type", names=TRUE)
 # stack(allDiatomOutlines)
 stack(coo_center(allDiatomOutlines))
 ```
-**@ Soren: aren't some of these pots the wrong way round? with their openings to the right, when most are to the left? This needs to be fixed in DiaOutline, I guess.**
 
 #Calibrate harmonic power
 
@@ -264,7 +263,7 @@ an, bn, cn, and dn, where n is the number of harmonics." (Wishkerman et al. 2018
 NOTE: For more information about estimating the right amount of harmonics see Bonhomme et al. 2014, p. 12-14
 
 ```{r compute the EFA, echo=TRUE}
-allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=23) #Num. of harmonics set to 23 as suggested by the calibrate harmonic power
+allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=14) #Num. of harmonics set to 23 as suggested by the calibrate harmonic power
 ```
 
 OK, the first part of the outline analysis is fairly done. I got my shapes in a coordinate system (although they are tilted 90° to the left), and the commands seems to be working. The last line (allDiatomOutlines.f) has a warning that -`norm=TRUE` is used and this may be troublesome. See ?efourier-, but when I look at ?efourier then the standard is "norm=TRUE". I don't believe that it is of great importance.
@@ -311,8 +310,6 @@ NOTE: I can solve the problem with removing the "1" in the code. I think the "1"
 
 plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
-#NOTE: I get the warning "will be deprecated soon, see ?plot_PCA" but it makes a plot of the PCAs
-
 #dev.off()
 ```
 NOTE: This looks better! Now all my 18 trial traces are included in the PCA plot.
@@ -348,7 +345,7 @@ summary(allDiatomOutlines.l)
 
 #Sophie (use Momocs by ::)
 
-allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, 1)
+allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, fac = "Type")
 
 #View "x" and "fac" Sophie
 View(allDiatomOutlines.p$fac)
