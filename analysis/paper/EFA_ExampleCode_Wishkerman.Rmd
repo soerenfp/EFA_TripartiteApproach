@@ -27,7 +27,7 @@ allDiatomOutlines<-Out(coordinates, fac = lf2)
 panel(allDiatomOutlines, fac="Type", names=TRUE)
 # stack(allDiatomOutlines)
 stack(coo_center(allDiatomOutlines))
-# calibrate_harmonicpower(allDiatomOutlines) #Estimates the number of harmonics required for the four Fourier methods implemented in Momocs
+calibrate_harmonicpower(allDiatomOutlines) #Estimates the number of harmonics required for the four Fourier methods implemented in Momocs
 allDiatomOutlines.f <- efourier(allDiatomOutlines, nb.h=32) #Num. of harmonics set to 32
 ```
 

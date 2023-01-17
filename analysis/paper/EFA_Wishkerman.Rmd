@@ -62,6 +62,8 @@ knitr::opts_chunk$set(
 Wishkerman, A., and P. B. Hamilton. 2018. Shape outline extraction software (DiaOutline) for elliptic Fourier analysis application in morphometric studies. Applications in Plant Sciences 6(12): e1204.
 https://doi.org/10.1002/aps3.1204 
 
+OBS: ALL ORIGINAL CODE IS PLOTTED BELOW THE USED CODE AS "#ORIGINAL CODE: (...)"
+
 # DiaOutline and example code presented here is available at:
 
 https://github.com/wishkerman/DiaOutline
@@ -169,6 +171,8 @@ library(tidyverse)
 lf <- list.files(path = here::here("analysis/data/Dia Outline traces"), 
                  pattern = "\\.txt$", # this tells the function to only look for .txt type files
                  full.names=TRUE)  # We have to keep the full names on to read in the outlines later.
+
+#ORIGINAL CODE: lf <- list.files("E:/DiaOutlineDataset/", pattern = "\\.txt$",full.names=TRUE)
 ```
 
 #Create a new variable and split the data using lf_structure()
@@ -178,13 +182,17 @@ lf <- list.files(path = here::here("analysis/data/Dia Outline traces"),
 ```{r split data frame, echo=TRUE}
 #split = (...) -> character, the splitting factor used for the file names.
 
-#NOTE: The following split = "C:/(...)" function I believe is again to specify the path to the data.
+#NOTE: in the original code it want to split "path = here::here("analysis/data/Dia Outline traces")"
 
 lf1 <- Momocs::lf_structure(lf,  
-                    split = "/", # this specifies the separator for splitting. In your case it is a /
-                    trim.extension = FALSE) #Perhaps I have to give them better names?
+                    split = "/", # Nick: this specifies the separator for splitting. In your case it is a /
+                    trim.extension = FALSE)
 
-lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command splits the column v1, but it has no use -> This command is not in the original example code!
+#ORIGINAL CODE: lf1<-lf_structure(lf,  split = "E:/DiaOutlineDataset/", trim.extension = FALSE)
+
+###BELOW IS NICKS CODE###
+
+lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command splits the column v1, but it has no use
 
 # @Søren: I am using Momocs:: in front of the function only to remind myself where it comes from. It is not necessary.
 ```
@@ -196,20 +204,27 @@ lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command
 
 #"In order to specify explanatory variables going along with the coordinate or coefficient set, grouping factors or covariates can be specified through a data.frame(), and then used to create subsets (see ?Coo)." (Bonhomme et al. 2014)
 
-#NOTE: Problem in the LDA comes from below, that the .txt files have wrong headline names -> change to original coordinate names! (Do DiaOutline trace again)
-
 lf2<-data.frame(substr(lf1$V2, 1, 5))
+
+#ORIGINAL CODE: lf2<-data.frame(substr(lf1$V2, 1, 5))
 
 #...and name the data frame column
 
 names(lf2)[1] <- "Type"
 
-###Nick entered the lines below to make the levels/categories
+#ORIGINAL CODE: names(lf2)[1] <- "Type"
 
-#this is, I think, where one of the problems comes in. We need to give things types. So I am just going to fill this with 3 random values. This means that "fac" will later always be these things.
-levels = c("great", "medium", "horrible") #Nick entered the levels
-lf2$Type <- sample(levels, size = 241, replace = TRUE) #OBS: the "size" has to be the total number of vessels (i.e. 241 in this example) #Nick entered this
-lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So it needs to be converted. Nick entered this
+###BELOW IS NICKS CODE###
+
+#Nick entered the lines below to make the levels/categories
+
+#NICK: this is, I think, where one of the problems comes in. We need to give things types. So I am just going to fill this with 3 random values. This means that "fac" will later always be these things.
+
+levels = c("great", "medium", "horrible")
+
+lf2$Type <- sample(levels, size = 241, replace = TRUE) #OBS: the "size" has to be the total number of vessels (i.e. 241 in this example)
+
+lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So it needs to be converted:
 ```
 
 
@@ -217,6 +232,8 @@ lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So i
 
 ```{r import coordinates, echo=TRUE}
 coordinates <- import_txt(lf)
+
+#ORIGINAL CODE: coordinates <- import_txt(lf)
 ```
 #Build an Out object 
 
@@ -224,6 +241,8 @@ coordinates <- import_txt(lf)
 
 ```{r build an Out object, echo=TRUE}
 allDiatomOutlines <- Out(coordinates, fac = lf2)
+
+#ORIGINAL CODE: allDiatomOutlines<-Out(coordinates, fac = lf2)
 ```
 
 #Plot all the outlines
@@ -232,6 +251,8 @@ side by side, from a Coo (Out, Opn or Ldk) objects.
 
 ```{r plot allDiatomOutlines, echo=TRUE}
 panel(allDiatomOutlines, fac="Type", names=TRUE)
+
+#ORIGINAL CODE: panel(allDiatomOutlines, fac="Type", names=TRUE)
 ```
 
 #Stack all the vessel shapes into one coordinate system
@@ -241,6 +262,8 @@ panel(allDiatomOutlines, fac="Type", names=TRUE)
 
 # stack(allDiatomOutlines)
 stack(coo_center(allDiatomOutlines))
+
+#ORIGINAL CODE: stack(coo_center(allDiatomOutlines))
 ```
 
 #Calibrate harmonic power
@@ -248,9 +271,11 @@ stack(coo_center(allDiatomOutlines))
 Estimates the number of harmonics required for the four Fourier methods implemented in Momocs
 
 ```{r calibrate harmonic power, echo=TRUE}
-calibrate_harmonicpower_efourier(allDiatomOutlines) 
+calibrate_harmonicpower_efourier(allDiatomOutlines) #Nick added _efourier
 
-# using the efourier function works now. I've interpreted the output to mean that nothing much changes after about 14 harmonics, but you need to check this.
+#ORIGINAL CODE: calibrate_harmonicpower(allDiatomOutlines)
+
+#NICK: using the efourier function works now. I've interpreted the output to mean that nothing much changes after about 14 harmonics, but you need to check this.
 ```
 
 #Compute the EFA from a matrix in a new variable
@@ -265,7 +290,9 @@ an, bn, cn, and dn, where n is the number of harmonics." (Wishkerman et al. 2018
 NOTE: For more information about estimating the right amount of harmonics see Bonhomme et al. 2014, p. 12-14
 
 ```{r compute the EFA, echo=TRUE}
-allDiatomOutlines.f <- efourier(allDiatomOutlines, norm = TRUE, nb.h=14) #Num. of harmonics set to 23 as suggested by the calibrate harmonic power
+allDiatomOutlines.f <- efourier(allDiatomOutlines, nb.h=14) #Num. of harmonics set to 14 as suggested by the calibrate harmonic power - Used to include "norm = TRUE" after the first comma
+
+#ORIGINAL CODE: allDiatomOutlines.f <- efourier(allDiatomOutlines, nb.h=32) #Num. of harmonics set to 32
 ```
 
 OK, the first part of the outline analysis is fairly done. I got my shapes in a coordinate system (although they are tilted 90° to the left), and the commands seems to be working. The last line (allDiatomOutlines.f) has a warning that -`norm=TRUE` is used and this may be troublesome. See ?efourier-, but when I look at ?efourier then the standard is "norm=TRUE". I don't believe that it is of great importance.
@@ -286,7 +313,11 @@ I changed the allDiatomOutlines.f code above to norm = TRUE. No more warning mes
 
 allDiatomOutlines.p <- PCA(allDiatomOutlines.f)
 
-summary(allDiatomOutlines.p)
+#ORIGINAL CODE: allDiatomOutlines.p <- PCA(allDiatomOutlines.f)
+
+###BELOW IS NICKS CODE###
+
+#summary(allDiatomOutlines.p)
 ```
 
 #Make a .tiff image of the data
@@ -300,6 +331,8 @@ NOTE 3: I included the tiff image where I specified the path to
 
 ```{r tiff image, echo=TRUE}
 tiff("C:/Users/Pedersen/Documents/R/EFA_TripartiteApproach/analysis/data/trial_data/Supplement_10AllPCA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
+
+#ORIGINAL CODE: tiff("E:/Supplement_10AllPCA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
 ```
 
 #Plot the PCA
@@ -308,9 +341,10 @@ NOTE: Problem comes below; "col.groups" object is not found in the "allDiatomOut
 
 NOTE: I can solve the problem with removing the "1" in the code. I think the "1" is some kind of column ID.
 ```{r plot the PCA, echo=TRUE}
-#Original line -> plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
-plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA")
+plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
+
+#ORIGINAL CODE: plot(allDiatomOutlines.p, 1, chull.filled=TRUE,stars=TRUE, title="All data PCA") #Supplement 10 in the paper.
 
 #dev.off()
 ```
@@ -318,17 +352,18 @@ NOTE: This looks better! Now all my 18 trial traces are included in the PCA plot
 
 #Plot the PCA
 
-PROBLEM: Now my problem with the col.groups() comes below.
-SOLVED: Need "grDevices" package installed
-
 ```{r plot PCA, echo=TRUE}
 plot(allDiatomOutlines.p,"Type", title="All data PCA")
+
+#ORIGINAL CODE: plot(allDiatomOutlines.p,"Type", title="All data PCA")
 ```
 
 ```{r plot PCA, echo=TRUE}
 #Give a new headline instead of "1"
 
-plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE)
+plot(allDiatomOutlines.p, 1, chull=TRUE, 1, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE)
+
+#ORIGINAL CODE: plot(allDiatomOutlines.p, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE)
 ```
 
 ##(2.2.3) LDA: Linear Discriminant Analysis
@@ -340,26 +375,62 @@ OBS: Perhaps I don't need to do the LDA???
 ```{r, echo=TRUE}
 #Linear Discriminant Analysis
 
-allDiatomOutlines.l <- LDA(allDiatomOutlines.p, fac = "Type") # here you need to tell the function your fac. 
+allDiatomOutlines.l <- Momocs::LDA(allDiatomOutlines.p, fac = "Type") # NICK: here you need to tell the function your fac. Soren: the LDA works (i.e. no warnings) if I plot "Momocs::" before the code
 
-summary(allDiatomOutlines.l)
+#ORIGINAL CODE: allDiatomOutlines.l <- LDA(allDiatomOutlines.p,1)
 
-#Sophie (use Momocs by ::)
+#summary(allDiatomOutlines.l)
+```
 
-allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, fac = "Type") #For some reason the LDA works better if you force it to use "Momocs::"
+
+###CODE BELOW BY Sophie Schmidt (use Momocs by ::)###
+
+```{r, LDA by Sophie, echo=TRUE}
+
+#allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, fac = "Type") #For some reason the LDA works better if you force it to use "Momocs::"
 
 #View "x" and "fac" Sophie
+
 #View(allDiatomOutlines.p$fac)
 #View(allDiatomOutlines.p$x)
-
-
-tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
-plot(allDiatomOutlines.l, chull.filled=TRUE, stars=TRUE, title="All data LDA") #Fig 8 in the paper.
-#dev.off()
-
-plot(allDiatomOutlines.l, title="All data LDA") #Another plot version
-plot(allDiatomOutlines.l, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE) #Another plot version
 ```
+
+#Create a .tiff image
+
+```{r, tiff image, echo=TRUE}
+tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
+
+#ORIGINAL CODE: tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
+```
+
+#Plot 1 LDA
+
+```{r, plot LDA, echo=TRUE}
+#Below comes the warning message: Error in hist.default(xy[fac == levels(fac)[1]], xlim = hist.range, ylab = NA,  : invalid number of 'breaks'
+
+plot(allDiatomOutlines.l, chull.filled=TRUE, stars=TRUE, title="All data LDA") #Fig 8 in the paper.
+
+#ORIGINAL CODEplot(allDiatomOutlines.l, chull.filled=TRUE, stars=TRUE, title="All data LDA") #Fig 8 in the paper.
+
+#dev.off()
+```
+
+#Plot 2 LDA
+
+```{r, plot LDA, echo=TRUE}
+plot(allDiatomOutlines.l, title="All data LDA") #Another plot version
+
+#ORIGINAL CODE: plot(allDiatomOutlines.l, title="All data LDA") #Another plot version
+```
+
+#Plot 3 LDA
+
+```{r, plot LDA, echo=TRUE}
+plot(allDiatomOutlines.l, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE) #Another plot version
+
+#ORIGINAL CODE: plot(allDiatomOutlines.l, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.labelsgroups = TRUE, points=FALSE, labelspoints = TRUE) #Another plot version
+```
+
 
 #(2.2.3) MANOVA
 
@@ -372,11 +443,32 @@ plot(allDiatomOutlines.l, 1, chull=TRUE, pos.shp = "full_axes", abbreviate.label
 
 ```{r, echo=TRUE}
 m<-MANOVA(allDiatomOutlines.p, 'Type')
+
+#ORIGINAL CODE: m<-MANOVA(allDiatomOutlines.p, 'Type')
+```
+
+```{r, echo=TRUE}
 mpw<-MANOVA_PW(allDiatomOutlines.p, "Type")
 
-summary(m)
+#ORIGINAL CODE: mpw<-MANOVA_PW(allDiatomOutlines.p, "Type")
 
+#summary(m)
+```
+
+```{r, echo=TRUE}
 sink("E:/Manova.txt")
+
+#ORIGINAL CODE: sink("E:/Manova.txt")
+```
+
+```{r, echo=TRUE}
 lapply(mpw, print)
+
+#ORIGINAL CODE: lapply(mpw, print)
+```
+
+```{r, echo=TRUE}
 sink()
+
+#ORIGINAL CODE: sink() 
 ```
