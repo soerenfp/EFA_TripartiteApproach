@@ -101,31 +101,31 @@ an outline x-y coordinate vector metric for each shape that can be further analy
 
 (2.1.1) Install these packages for statistical analysis...
 ```{r install packages, eval=FALSE, echo=TRUE}
-#install.packages("bios2mds")
-#install.packages("MASS")
-#install.packages("ggplot2")
-#install.packages("GGally")
-#install.packages("doBy")
-#install.packages("data.table")
-#install.packages("plyr")
-#install.packages("grid")
-#install.packages("gridExtra")
-#install.packages("Momocs")
+install.packages("bios2mds")
+install.packages("MASS")
+install.packages("ggplot2")
+install.packages("GGally")
+install.packages("doBy")
+install.packages("data.table")
+install.packages("plyr")
+install.packages("grid")
+install.packages("gridExtra")
+install.packages("Momocs")
 #install.packages("cli") #Used to troubleshoot "devtools" that could not be loaded -> worked with restart of R!
-#install.packages("devtools")
+install.packages("devtools")
 
 #Needed for LDA 
-#install.packages("topicmodels")
-#install.packages("tm")
+install.packages("topicmodels")
+install.packages("tm")
 
 #Needed for col.groups() when plotting PCA
-#install.packages("grDevices")
+install.packages("grDevices")
 
 #Recommended by Sophie (plot_PCA)
-#devtools::install_github("3inar/grindr")
+devtools::install_github("3inar/grindr")
 
 #Extra
-#install.packages("tidyverse")
+install.packages("tidyverse")
 ```
 (2.1.2) ...and load
 ```{r load packages, echo=TRUE}
@@ -182,9 +182,9 @@ lf <- list.files(path = here::here("analysis/data/Dia Outline traces"),
 
 lf1 <- Momocs::lf_structure(lf,  
                     split = "/", # this specifies the separator for splitting. In your case it is a /
-                    trim.extension = TRUE) #Perhaps I have to give them better names?
+                    trim.extension = FALSE) #Perhaps I have to give them better names?
 
-lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command splits the column v1, but it has no use
+lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command splits the column v1, but it has no use -> This command is not in the original example code!
 
 # @Søren: I am using Momocs:: in front of the function only to remind myself where it comes from. It is not necessary.
 ```
@@ -198,16 +198,18 @@ lf1 <- lf1 %>% separate(V1, c("project", "type", "sort", "number")) #The command
 
 #NOTE: Problem in the LDA comes from below, that the .txt files have wrong headline names -> change to original coordinate names! (Do DiaOutline trace again)
 
-lf2<-data.frame(substr(lf1$type, 1, 5))
+lf2<-data.frame(substr(lf1$V2, 1, 5))
 
 #...and name the data frame column
 
 names(lf2)[1] <- "Type"
 
+###Nick entered the lines below to make the levels/categories
+
 #this is, I think, where one of the problems comes in. We need to give things types. So I am just going to fill this with 3 random values. This means that "fac" will later always be these things.
-levels = c("great", "medium", "horrible")
-lf2$Type <- sample(levels, size = 241, replace = TRUE) #OBS: the "size" has to be the total number of vessels (i.e. 241 in this example)
-lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So it needs to be converted.
+levels = c("great", "medium", "horrible") #Nick entered the levels
+lf2$Type <- sample(levels, size = 241, replace = TRUE) #OBS: the "size" has to be the total number of vessels (i.e. 241 in this example) #Nick entered this
+lf2$Type <- as_factor(lf2$Type) # unless this is a factor, it does nothing. So it needs to be converted. Nick entered this
 ```
 
 
@@ -306,7 +308,7 @@ NOTE: Problem comes below; "col.groups" object is not found in the "allDiatomOut
 
 NOTE: I can solve the problem with removing the "1" in the code. I think the "1" is some kind of column ID.
 ```{r plot the PCA, echo=TRUE}
-#Original line plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
+#Original line -> plot(allDiatomOutlines.p, 1, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
 plot(allDiatomOutlines.p, chull.filled = TRUE, stars = TRUE, title="All data PCA")
 
@@ -320,7 +322,7 @@ PROBLEM: Now my problem with the col.groups() comes below.
 SOLVED: Need "grDevices" package installed
 
 ```{r plot PCA, echo=TRUE}
-plot(allDiatomOutlines.p, "Type" , title="All data PCA")
+plot(allDiatomOutlines.p,"Type", title="All data PCA")
 ```
 
 ```{r plot PCA, echo=TRUE}
@@ -337,7 +339,6 @@ OBS: Perhaps I don't need to do the LDA???
 
 ```{r, echo=TRUE}
 #Linear Discriminant Analysis
-#NOTE: Below "Error in fac_dispatcher(x, fac) : argument "fac" is missing, with no default"
 
 allDiatomOutlines.l <- LDA(allDiatomOutlines.p, fac = "Type") # here you need to tell the function your fac. 
 
@@ -345,14 +346,14 @@ summary(allDiatomOutlines.l)
 
 #Sophie (use Momocs by ::)
 
-allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, fac = "Type")
+allDiatomOutlines.l <-  Momocs::LDA(allDiatomOutlines.p, fac = "Type") #For some reason the LDA works better if you force it to use "Momocs::"
 
 #View "x" and "fac" Sophie
-View(allDiatomOutlines.p$fac)
-View(allDiatomOutlines.p$x)
+#View(allDiatomOutlines.p$fac)
+#View(allDiatomOutlines.p$x)
 
 
-#tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
+tiff("E:/Fig8AllLDA.tiff", height = 12, width = 17, units = 'cm', compression = "lzw", res = 500)
 plot(allDiatomOutlines.l, chull.filled=TRUE, stars=TRUE, title="All data LDA") #Fig 8 in the paper.
 #dev.off()
 
