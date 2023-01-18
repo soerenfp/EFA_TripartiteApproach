@@ -124,10 +124,12 @@ install.packages("tm")
 install.packages("grDevices")
 
 #Recommended by Sophie (plot_PCA)
-devtools::install_github("3inar/grindr")
+#devtools::install_github("3inar/grindr")
 
 #Extra
 install.packages("tidyverse")
+install.packages("knitr")
+install.packages("rgl")
 ```
 (2.1.2) ...and load
 ```{r load packages, echo=TRUE}
@@ -150,7 +152,8 @@ library(tm)
 library(topicmodels)
 
 #Extra
-library(tidyverse)
+#library(tidyverse)
+library(knitr)
 ```
 
 "Momocs [75] is an EFA package recently developed for use within the R environment [44]. The functions written within Momocs are primarily derived from Claude’s 2008 book Morphometrics Using R [49]. It encompasses the majority of the analytical process, including outline extraction, EFA, as well as statistical methods such as principal component analysis, MANOVA, and thin plate splines. The utility of calling individual functions within R allows the user to customize the analysis to their needs; however, it also requires a basic knowledge of R programming to navigate." (Caple et al. 2017)

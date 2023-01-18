@@ -59,7 +59,7 @@ This is the description and code for FossilSim (Barido-Sottani 2018), with provi
 
 (1) Install and run FossilSim
 ```{r, echo=TRUE}
-install.packages("FossilSim")
+#install.packages("FossilSim")
 library(FossilSim)
 ```
 
@@ -78,7 +78,7 @@ Anagenetic speciation occurs along each branch in a phylogenetic tree with rate 
 ```{r, echo=TRUE}
 t = TreeSim::sim.bd.taxa(n = 8, numbsim = 1, lambda = 1, mu = 0.3)[[1]]
 s = sim.taxonomy(tree = t, beta = 0.5, lambda.a = 1)
-plot.taxonomy(s, tree = t)
+plot(s, tree = t)
 ```
 
 #(2.2) Example 2: simulating fossils under mixed speciation and constant fossil recovery
@@ -88,8 +88,8 @@ plot.taxonomy(s, tree = t)
 ```{r, echo=TRUE}
 t = TreeSim::sim.bd.taxa(n = 8, numbsim = 1, lambda = 1, mu = 0.3)[[1]]
 s = sim.taxonomy(tree = t, beta = 0.5, lambda.a = 1)
-f = sim.fossils.poisson(rate = 3, taxonomy = S)
-plot.fossils(f, tree =t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
+f = sim.fossils.poisson(rate = 3, taxonomy = s)
+plot(f, tree =t, taxonomy = s, show.taxonomy = TRUE, show.ranges = TRUE)
 ```
 
 #(2.3) Example 3: lineage-dependent fossil recovery
