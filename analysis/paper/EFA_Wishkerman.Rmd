@@ -171,7 +171,7 @@ library(knitr)
 
 #NOTE: Do not use long folder names
 
-lf <- list.files(path = here::here("analysis/data/Dia Outline traces"), 
+lf <- list.files(path = here::here("analysis/data/DiaOutlineTraces_NewNames"), 
                  pattern = "\\.txt$", # this tells the function to only look for .txt type files
                  full.names=TRUE)  # We have to keep the full names on to read in the outlines later.
 
@@ -247,6 +247,8 @@ allDiatomOutlines <- Out(coordinates, fac = lf2)
 
 #ORIGINAL CODE: allDiatomOutlines<-Out(coordinates, fac = lf2)
 ```
+
+### Or perhaps copy until here?###
 
 #Plot all the outlines
 
